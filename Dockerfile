@@ -5,4 +5,4 @@ COPY ./public /app/public
 
 RUN pip install --upgrade pip
 RUN ls -agl
-RUN pip install -r requirements.txt
+RUN pip install -r ./app/requirements.txt
