@@ -1,23 +1,18 @@
-from tempfile import NamedTemporaryFile
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 
-import labs
+from app.labs import physics_1_2
 
 
 app = FastAPI(docs_url=None, redoc_url=None)
 
 app.mount('/public', StaticFiles(directory='public'), name='public')
+app.include_router(physics_1_2.router)
 
 @app.get('/')
 def root():
     return RedirectResponse(url="/public/index.html")
 
 
-@app.get('/files/physics/1_2.xlsx')
-def physics_1_2():
-    workbook = labs.physics_1_2.create_workbook()
-    tmp = NamedTemporaryFile(delete=False)
-    workbook.save(tmp.name)
-    return FileResponse(tmp.name, filename='Лабораторна 1-2.xlsx')
+

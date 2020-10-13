@@ -1,14 +1,13 @@
 import math
 import random
 from typing import List
+from tempfile import NamedTemporaryFile
+
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
 from openpyxl import load_workbook
 
-
-RANGES = [0.70, 0.70, 0.70, 0.67, 0.67, 0.67, 0.64, 0.64, 0.64,
-          0.60, 0.60, 0.60, 0.57, 0.57, 0.57, 0.54, 0.54, 0.54,
-          0.51, 0.51, 0.51, 0.48, 0.48, 0.48, 0.45, 0.45, 0.45,
-          0.41, 0.41, 0.41, 0.38, 0.38, 0.38, 0.35, 0.35, 0.35,
-          0.32, 0.32, 0.32, 0.28, 0.28, 0.28, 0.25, 0.25, 0.25]
+router = APIRouter()
 
 
 def calculate_period(a: float, a0: float) -> float:
@@ -31,14 +30,27 @@ def generate_data(ranges: list, delta: float, mu: float) -> List[float]:
 
 
 def create_workbook() -> 'openpyxl.workbook.workbook.Workbook':
+    ranges = [0.70, 0.70, 0.70, 0.67, 0.67, 0.67, 0.64, 0.64, 0.64,
+              0.60, 0.60, 0.60, 0.57, 0.57, 0.57, 0.54, 0.54, 0.54,
+              0.51, 0.51, 0.51, 0.48, 0.48, 0.48, 0.45, 0.45, 0.45,
+              0.41, 0.41, 0.41, 0.38, 0.38, 0.38, 0.35, 0.35, 0.35,
+              0.32, 0.32, 0.32, 0.28, 0.28, 0.28, 0.25, 0.25, 0.25]
     delta = random.uniform(0.02, 0.03)  # рамки відхилення
     mu = random.uniform(-0.005, 0.01)   # мода вибірки
-    periods = generate_data(RANGES, delta, mu)
+    periods = generate_data(ranges, delta, mu)
 
-    workbook = load_workbook(filename='../templates/physics_1_2.xlsx')
+    workbook = load_workbook(filename='app/templates/physics_1_2.xlsx')
     datasheet = workbook['Data']
 
     for period, (cell, *_) in zip(periods, datasheet['C2:C46']):
         cell.value = period
 
     return workbook
+
+
+@router.get('/files/physics/1_2.xlsx')
+def download():
+    workbook = create_workbook()
+    tmp = NamedTemporaryFile(delete=False)
+    workbook.save(tmp.name)
+    return FileResponse(tmp.name, filename='Лабораторна 1-2.xlsx')
