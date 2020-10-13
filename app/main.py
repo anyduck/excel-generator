@@ -3,12 +3,12 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 
-import app.labs as labs
+import labs
 
 
 app = FastAPI(docs_url=None, redoc_url=None)
 
-app.mount('/public', StaticFiles(directory='app/public'), name='public')
+app.mount('/public', StaticFiles(directory='public'), name='public')
 
 @app.get('/')
 def root():
