@@ -139,7 +139,7 @@ dmypy.json
 .prof
 
 ### vscode ###
-.vscode/*
+.vscode/
 *.code-workspace
 
 ### Windows ###
