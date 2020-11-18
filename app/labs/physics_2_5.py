@@ -39,7 +39,6 @@ def create_workbook() -> 'openpyxl.workbook.workbook.Workbook':
         for cell in row:
             cell.value = amperage
 
-    workbook.save("1.xlsx")
     return workbook
 
 
