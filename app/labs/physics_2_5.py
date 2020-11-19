@@ -24,19 +24,25 @@ def calculate_amperage(voltage: float, radius: float) -> float:
     elif radius >= 10:
         voltage = 0
 
-    return round(voltage * ADDITIONAL_RESISTANCE)
+    amperage = voltage * ADDITIONAL_RESISTANCE
+
+    if amperage % 1 > 0.3 and amperage % 1 < 0.7:  # дробова частина
+        amperage += random.uniform(-0.5, 0.5)      # емуляція округлення на око
+
+    return round(amperage)
 
 
 def create_workbook() -> 'openpyxl.workbook.workbook.Workbook':
 
     voltage = round(random.uniform(4.5, 5.5), 1)  # напруга від 4.5 до 5.5 В
-    amperages = [calculate_amperage(voltage, radius) for radius in range(9)]
+    amperages = [[calculate_amperage(voltage, radius) for column in range(4)]
+                                                      for radius in range(9)]
 
     workbook = load_workbook(filename='app/templates/physics_2_5.xlsx')
     datasheet = workbook['Data']
 
-    for amperage, row in zip(amperages, datasheet['B3:E11']):
-        for cell in row:
+    for amperages_row, cells_row in zip(amperages, datasheet['B3:E11']):
+        for amperage, cell in zip(amperages_row, cells_row):
             cell.value = amperage
 
     return workbook
